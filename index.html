@@ -202,8 +202,13 @@
                     new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
                     window.teamfilter.includes(e.ZoneControlState)
                 )
-            } else {
+            } else if(window.regionfilter == 0){
                 var data = window.data.filter(e => e.TotalCount >= window.countfilter &&
+                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
+                    window.teamfilter.includes(e.ZoneControlState)
+                )
+            } else{
+                 var data = window.data.filter(e => e.TotalCount >= window.countfilter && e.RegionId == window.regionfilter &&
                     new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
                     window.teamfilter.includes(e.ZoneControlState)
                 )
@@ -312,13 +317,32 @@
 
         legend.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'info legend');
-            div.innerHTML += `Strefy <select id="filtertime">
+            div.innerHTML += `Aktywne <select id="filtertime">
                     <option>Wszystkie</option>
                     <option value="month">Ostatni miesiąc</option>
                     <option value="week">Ostatni tydzień</option>
                     <option value="day">Ostatni dzień</option>
                 </select><br>
-                <select id='filter'>
+                Region <select id='regionfilter'>
+                    <option value=0>Wszystkie</option>
+                    <option value=2445>dolnośląskie</option>
+                    <option value=2453>kujawsko-pomorskie</option>
+                    <option value=2438>lubelskie</option>
+                    <option value=2447>lubuskie</option>
+                    <option value=2446>łódzkie</option>
+                    <option value=2439>małopolskie</option>
+                    <option value=2448>opolskie</option>
+                    <option value=2441>podkarpackie</option>
+                    <option value=2442>podlaskie</option>
+                    <option value=2449>pomorskie</option>
+                    <option value=2450>śląskie</option>
+                    <option value=2443>świętokrzyskie</option>
+                    <option value=2444>warmińsko-mazurskie</option>
+                    <option value=2440>mazowieckie</option>
+                    <option value=2451>wielkopolskie</option>
+                    <option value=2452>zachodniopomorskie</option>
+                </select><br>
+                Rozmiar <select id='filter'>
                     <option value=0>Wszystkie strefy</option>
                     <option value=10000>Większe niż 10K</option>
                     <option value=100000>Większe niż 100K</option>
@@ -333,8 +357,15 @@
             return div;
         };
         legend.addTo(map);
+        window.regionfilter = 0;
         window.countfilter = 0;
         window.timefilter = new Date(0);
+        
+         $("#regionfilter").change(function () {
+            window.regionfilter = this.value;
+            createPointsLayer();
+        })
+        
         $("#filter").change(function () {
             window.countfilter = this.value;
             createPointsLayer();
@@ -354,6 +385,8 @@
             createPointsLayer();
         })
 
+
+        
     </script>
 
 </body>
