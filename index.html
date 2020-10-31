@@ -176,7 +176,7 @@
         function buildDescString(d) {
             var className = zoneControlState[d.ZoneControlState]
             var desc = "<b class='" + className + "'>" + d.Description + "</b>" +
-                "<br>Zone ID: " + d.ZoneId +
+                "<br>Zone ID: " + d.ZoneControlState +
                 "<br>Captured: " + d.DateCapturedUtc.slice(0, 19) +
                 "<br>Last updated: " + d.LastUpdateDateUtc.slice(0, 19) +
                 "<div class='legion'>Legion: " + d.LegionCount.toLocaleString() + formatDelta(d.LegionDelta) +
@@ -203,15 +203,37 @@
                     window.teamfilter.includes(e.ZoneControlState)
                 )
             } else if(window.regionfilter == 0){
-                var data = window.data.filter(e => e.TotalCount >= window.countfilter &&
+                
+                if(window.fractionfilter == 5){
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter &&
                     new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
                     window.teamfilter.includes(e.ZoneControlState)
-                )
+                    )  
+                } else{
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
+                    e.ZoneControlState == window.fractionfilter &&
+                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
+                    window.teamfilter.includes(e.ZoneControlState)
+                    ) 
+                }
+
             } else{
-                 var data = window.data.filter(e => e.TotalCount >= window.countfilter && e.RegionId == window.regionfilter &&
+                
+                if(window.fractionfilter == 5){
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
+                    e.RegionId == window.regionfilter &&
                     new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
                     window.teamfilter.includes(e.ZoneControlState)
-                )
+                    )           
+                } else{
+                    
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
+                    e.ZoneControlState == window.fractionfilter && 
+                    e.RegionId == window.regionfilter &&
+                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
+                    window.teamfilter.includes(e.ZoneControlState)
+                    )               
+                }
             }
             console.log(data.length);
             var points = data.map(e => [e.Latitude, e.Longitude]);
@@ -342,6 +364,13 @@
                     <option value=2451>wielkopolskie</option>
                     <option value=2452>zachodniopomorskie</option>
                 </select><br>
+                Frakcja <select id='fractionfilter'>
+                    <option value=5>Wszystkie</option>
+                    <option value=1>Legion</option>
+                    <option value=2>Swarm</option>
+                    <option value=3>Faceless</option>
+                    <option value=0>Puste</option>
+                </select><br>
                 Rozmiar <select id='filter'>
                     <option value=0>Wszystkie strefy</option>
                     <option value=10000>Większe niż 10K</option>
@@ -358,10 +387,16 @@
         };
         legend.addTo(map);
         window.regionfilter = 0;
+        window.fractionfilter = 5;
         window.countfilter = 0;
         window.timefilter = new Date(0);
+       
+        $("#fractionfilter").change(function () {
+            window.fractionfilter = this.value;
+            createPointsLayer();
+        })
         
-         $("#regionfilter").change(function () {
+        $("#regionfilter").change(function () {
             window.regionfilter = this.value;
             createPointsLayer();
         })
