@@ -176,7 +176,7 @@
         function buildDescString(d) {
             var className = zoneControlState[d.ZoneControlState]
             var desc = "<b class='" + className + "'>" + d.Description + "</b>" +
-                "<br>Zone ID: " + d.ZoneControlState +
+                "<br>Zone ID: " + d.ZoneId +
                 "<br>Captured: " + d.DateCapturedUtc.slice(0, 19) +
                 "<br>Last updated: " + d.LastUpdateDateUtc.slice(0, 19) +
                 "<div class='legion'>Legion: " + d.LegionCount.toLocaleString() + formatDelta(d.LegionDelta) +
