@@ -40,6 +40,21 @@
             border-radius: 5px;
         }
 
+        /* Some shit */
+        
+        .klocek{
+            padding: 10px;
+            border-radius: 5px;  
+            background-color: rgba(0, 0, 0, 0.8);
+            visibility: visible;    
+        }
+        
+        .naglowek{
+            color: white;
+        }
+        
+        /* end */
+        
         .uncaptured {
             color: orange;
         }
@@ -109,8 +124,10 @@
             setView: true,
             maxZoom: 5
         }).on("locationfound", function (e) {
-            L.circle([e.latitude, e.longitude], { color: "cyan", radius: e.accuracy }).bindTooltip("You").addTo(map);
+            L.circle([e.latitude, e.longitude], { color: "cyan", radius: 500 }).bindTooltip("You").addTo(map);
             var range_km = 1609.34;
+            /*var ZA = 48;
+            var Shock = 40;*/
             if (new Date().getUTCDay() == 1) { // Monday
                 var week = Math.floor(new Date().getUTCDate() / 7);
                 if (week == 1) {
@@ -121,9 +138,11 @@
                     range_km = 20116.8;
                 }
             }
-            L.circle([e.latitude, e.longitude], { color: "cyan", fillOpacity: 0, weight: .5, radius: range_km * 1000, interactive: false }).addTo(map);
+            L.circle([e.latitude, e.longitude], { color: "cyan", fillOpacity: 0, weight: 0.75, radius: range_km * 1000, interactive: false }).addTo(map);
+            /*L.circle([e.latitude, e.longitude], { color: "cyan", fillOpacity: 0, weight: 0.75, radius: ZA * 1000, interactive: false }).addTo(map);
+            L.circle([e.latitude, e.longitude], { color: "cyan", fillOpacity: 0, weight: 0.75, radius: Shock * 1000, interactive: false }).addTo(map);*/
         });
-
+        
         var baseMaps = {
             "CartoDB Dark Matter": L.tileLayer.provider("CartoDB.DarkMatter").addTo(map)
         }
@@ -156,7 +175,6 @@
             window.teamfilter = indices;
             createPointsLayer();
         });
-
 
         function clamp(num) {
             var min = 10;
@@ -327,10 +345,8 @@
                 totalSwarm += d.SwarmCount;
                 totalFaceless += d.FacelessCount;
             }
-            $("#stats").html("<div class='legion'>Total Legion bots:" + totalLegion.toLocaleString() +
-                "</div><div class='swarm'>Total Swarm bots: " + totalSwarm.toLocaleString() +
-                "</div><div class='faceless'>Total Faceless bots: " + totalFaceless.toLocaleString() +
-                "</div><div>Total zones: " + data.length.toLocaleString() + "</div><div id='top10'>Top 10 zones:</div>");
+            
+            $("#stats").html("<div>Total zones: " + data.length.toLocaleString() + "</div><div id='top10'>Top 10 zones:</div>");
             var sorted_data = data.filter(e => e.TotalDelta != undefined).sort((a, b) => a.TotalDelta < b.TotalDelta ? 1 : -1);
             var top10 = sorted_data.slice(0, 10);
             for (var i in top10) {
@@ -341,6 +357,11 @@
                 $("#top10").append("<div onclick='map.flyTo([" + d.Latitude + "," + d.Longitude + "], 12)' class='link " +
                     className + "'>" + d.Description + ", " + region + ", " + country + "</div>")
             }
+        
+            $("#infobot").html("<div class='naglowek klocek'>Liczba botów</div>");
+            $("#legionbot").html("<div class='legion klocek'>"+totalLegion.toLocaleString()+"</div>");
+            $("#swarmbot").html("<div class='swarm klocek'>"+totalSwarm.toLocaleString()+"</div>");
+            $("#faclessbot").html("<div class='faceless klocek'>"+totalFaceless.toLocaleString()+"</div>");
         }
 
         var baseUrl = "https://raw.githubusercontent.com/Nokimo/test/master/data/";
@@ -443,12 +464,60 @@
                     <option value=1000000>Większe niż 1M</option>
                     <option value=10000000>Więszke niż 10M</option>
                 </select><br>
+                Liczebność botów: <input id="checkbots" type="checkbox"><br>
                 <a id='statsButton' class='link' onclick='statsToggle()'>Show/hide stats</a><div id='stats' style='display:none'></div>
                 <a href='https://github.com/Nokimo/QONQR_zonedata'>GitHub</a>`;
             L.DomEvent.disableClickPropagation(div);
             return div;
         };
+    
         legend.addTo(map);
+        
+        /* Some messy code */
+    
+        $('#checkbots').click(function () {
+            $("#infobot").toggle();
+            $("#legionbot").toggle();
+            $("#swarmbot").toggle();
+            $("#faclessbot").toggle();
+        });
+        
+        var infobot = L.control({ position: 'topright' });
+        var legionbots = L.control({ position: 'topright' }); 
+        var swarmbots = L.control({ position: 'topright' }); 
+        var falcessbot = L.control({ position: 'topright' }); 
+        
+        infobot.onAdd = function (map) {
+            var div = L.DomUtil.create('div');
+            div.innerHTML += `<div id='infobot' style='display:none'></div>`;
+            return div;
+        };
+        
+        legionbots.onAdd = function (map) {
+            var div = L.DomUtil.create('div');
+            div.innerHTML += `<div id='legionbot' style='display:none'></div>`;
+            return div;
+        };
+    
+        swarmbots.onAdd = function (map) {
+            var div = L.DomUtil.create('div');
+            div.innerHTML += `<div id='swarmbot' style='display:none'></div>`;
+            return div;
+        };
+        
+        falcessbot.onAdd = function (map) {
+            var div = L.DomUtil.create('div');
+            div.innerHTML += `<div id='faclessbot' style='display:none'></div>`;
+            return div;
+        };
+        
+        infobot.addTo(map);
+        legionbots.addTo(map);
+        swarmbots.addTo(map);
+        falcessbot.addTo(map);
+        
+        /* End */
+        
         window.regionfilter = 0;
         window.minusfilter = 0;
         window.countfilter = 0;
