@@ -187,33 +187,115 @@
 
         function createPointsLayer() {
             console.log(window.data.length);
-            if (window.countfilter == "contested") {
-                var data = window.data.filter(function(e) {
-                    if (e.ZoneControlState == 0) return false; // Uncaptured zones are by definition uncontested
-                    // A Legion held zone, where the total bot count is equal to the legion bot count, is uncontested
-                    if (e.ZoneControlState == 1 && e.TotalCount == e.LegionCount) return false;
-                    if (e.ZoneControlState == 2 && e.TotalCount == e.SwarmCount) return false;
-                    if (e.ZoneControlState == 3 && e.TotalCount == e.FacelessCount) return false;
-                    return new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter && window.teamfilter.includes(e.ZoneControlState)
-                });
-                console.log(data);
-            } else if (window.countfilter == "colocated") {
-                var data = window.data.filter(e => e.colocated &&
-                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
-                    window.teamfilter.includes(e.ZoneControlState)
-                )
-            } else if(window.regionfilter == 0){
+            if(window.regionfilter == 0) 
+            {
+                if(window.minusfilter == 0)
+                {
                     var data = window.data.filter(e => e.TotalCount >= window.countfilter &&
                     new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
-                    window.teamfilter.includes(e.ZoneControlState)
-                    )  
-
+                    window.teamfilter.includes(e.ZoneControlState)) 
+                    
+                } else if(window.minusfilter == 1)
+                {
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
+                    e.LegionDelta < 0 &&                          
+                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
+                    window.teamfilter.includes(e.ZoneControlState)) 
+                    
+                } else if(window.minusfilter == 2)
+                {
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
+                    e.SwarmDelta < 0 &&                          
+                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
+                    window.teamfilter.includes(e.ZoneControlState))   
+                    
+                } else if(window.minusfilter == 3)
+                {
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
+                    e.FacelessDelta < 0 &&                          
+                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
+                    window.teamfilter.includes(e.ZoneControlState))  
+                    
+                } else if(window.minusfilter == 4){
+                    
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
+                    e.LegionDelta > 0 &&                          
+                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
+                    window.teamfilter.includes(e.ZoneControlState))
+                    
+                } else if(window.minusfilter == 5){
+                    
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
+                    e.SwarmDelta > 0 &&                          
+                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
+                    window.teamfilter.includes(e.ZoneControlState))   
+                    
+                } else {
+            
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
+                    e.FacelessDelta > 0 &&                          
+                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
+                    window.teamfilter.includes(e.ZoneControlState))   
+                }
+                
             } else{
+                
+                if(window.minusfilter == 0)
+                {
                     var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
                     e.RegionId == window.regionfilter &&
                     new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
-                    window.teamfilter.includes(e.ZoneControlState)
-                    )     
+                    window.teamfilter.includes(e.ZoneControlState)) 
+                    
+                } else if(window.minusfilter == 1)
+                {
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
+                    e.LegionDelta < 0 &&
+                    e.RegionId == window.regionfilter &&
+                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
+                    window.teamfilter.includes(e.ZoneControlState)) 
+                    
+                } else if(window.minusfilter == 2){
+                    
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
+                    e.SwarmDelta < 0 &&
+                    e.RegionId == window.regionfilter &&
+                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
+                    window.teamfilter.includes(e.ZoneControlState)) 
+                      
+                } else if(window.minusfilter == 3)
+                {
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
+                    e.FacelessDelta < 0 &&
+                    e.RegionId == window.regionfilter &&
+                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
+                    window.teamfilter.includes(e.ZoneControlState)) 
+                    
+                } else if(window.minusfilter == 4)
+                {
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
+                    e.LegionDelta > 0 &&
+                    e.RegionId == window.regionfilter &&
+                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
+                    window.teamfilter.includes(e.ZoneControlState)) 
+                    
+                } else if(window.minusfilter == 5)
+                {
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
+                    e.SwarmDelta > 0 &&
+                    e.RegionId == window.regionfilter &&
+                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
+                    window.teamfilter.includes(e.ZoneControlState)) 
+
+                } else
+                {  
+                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
+                    e.FacelessDelta > 0 &&
+                    e.RegionId == window.regionfilter &&
+                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
+                    window.teamfilter.includes(e.ZoneControlState)) 
+                }
+                
             }
             console.log(data.length);
             var points = data.map(e => [e.Latitude, e.Longitude]);
@@ -319,14 +401,15 @@
 
         legend.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'info legend');
-            div.innerHTML += `Aktywne <select id="filtertime">
+            div.innerHTML += 
+                `Aktywne <select id="filtertime">
                     <option>Wszystkie</option>
                     <option value="month">Ostatni miesiąc</option>
                     <option value="week">Ostatni tydzień</option>
                     <option value="day">Ostatni dzień</option>
                 </select><br>
                 Region <select id='regionfilter'>
-                    <option value=0>Wszystkie</option>
+                    <option value=0>Wył.</option>
                     <option value=2445>dolnośląskie</option>
                     <option value=2453>kujawsko-pomorskie</option>
                     <option value=2438>lubelskie</option>
@@ -344,14 +427,21 @@
                     <option value=2451>wielkopolskie</option>
                     <option value=2452>zachodniopomorskie</option>
                 </select><br>
+                Zmiana <select id='minusfilter'>
+                    <option value=0>Wył.</option>
+                    <option value=1>Legion -</option>
+                    <option value=2>Swarm -</option>
+                    <option value=3>Faceless -</option>
+                    <option value=4>Legion +</option>
+                    <option value=5>Swarm +</option>
+                    <option value=6>Faceless +</option>
+                </select><br>
                 Rozmiar <select id='filter'>
-                    <option value=0>Wszystkie strefy</option>
+                    <option value=0>Wył.</option>
                     <option value=10000>Większe niż 10K</option>
                     <option value=100000>Większe niż 100K</option>
                     <option value=1000000>Większe niż 1M</option>
                     <option value=10000000>Więszke niż 10M</option>
-                    <option value=contested>Show contested zones</option>
-                    <option value=colocated>Show colocated zones</option>
                 </select><br>
                 <a id='statsButton' class='link' onclick='statsToggle()'>Show/hide stats</a><div id='stats' style='display:none'></div>
                 <a href='https://github.com/Nokimo/QONQR_zonedata'>GitHub</a>`;
@@ -360,8 +450,14 @@
         };
         legend.addTo(map);
         window.regionfilter = 0;
+        window.minusfilter = 0;
         window.countfilter = 0;
         window.timefilter = new Date(0);
+       
+        $("#minusfilter").change(function () {
+            window.minusfilter = this.value;
+            createPointsLayer();
+        })
         
         $("#regionfilter").change(function () {
             window.regionfilter = this.value;
@@ -387,8 +483,6 @@
             createPointsLayer();
         })
 
-
-        
     </script>
 
 </body>
