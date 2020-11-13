@@ -205,8 +205,6 @@
 
         function createPointsLayer() {
             console.log(window.data.length);
-            if(window.regionfilter == 0) 
-            {
                 if(window.minusfilter == 0)
                 {
                     var data = window.data.filter(e => e.TotalCount >= window.countfilter &&
@@ -255,66 +253,6 @@
                     new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
                     window.teamfilter.includes(e.ZoneControlState))   
                 }
-                
-            } else{
-                
-                if(window.minusfilter == 0)
-                {
-                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
-                    e.RegionId == window.regionfilter &&
-                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
-                    window.teamfilter.includes(e.ZoneControlState)) 
-                    
-                } else if(window.minusfilter == 1)
-                {
-                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
-                    e.LegionDelta < 0 &&
-                    e.RegionId == window.regionfilter &&
-                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
-                    window.teamfilter.includes(e.ZoneControlState)) 
-                    
-                } else if(window.minusfilter == 2){
-                    
-                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
-                    e.SwarmDelta < 0 &&
-                    e.RegionId == window.regionfilter &&
-                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
-                    window.teamfilter.includes(e.ZoneControlState)) 
-                      
-                } else if(window.minusfilter == 3)
-                {
-                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
-                    e.FacelessDelta < 0 &&
-                    e.RegionId == window.regionfilter &&
-                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
-                    window.teamfilter.includes(e.ZoneControlState)) 
-                    
-                } else if(window.minusfilter == 4)
-                {
-                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
-                    e.LegionDelta > 0 &&
-                    e.RegionId == window.regionfilter &&
-                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
-                    window.teamfilter.includes(e.ZoneControlState)) 
-                    
-                } else if(window.minusfilter == 5)
-                {
-                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
-                    e.SwarmDelta > 0 &&
-                    e.RegionId == window.regionfilter &&
-                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
-                    window.teamfilter.includes(e.ZoneControlState)) 
-
-                } else
-                {  
-                    var data = window.data.filter(e => e.TotalCount >= window.countfilter && 
-                    e.FacelessDelta > 0 &&
-                    e.RegionId == window.regionfilter &&
-                    new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
-                    window.teamfilter.includes(e.ZoneControlState)) 
-                }
-                
-            }
             console.log(data.length);
             var points = data.map(e => [e.Latitude, e.Longitude]);
             if (window.pointsLayer) window.pointsLayer.remove()
@@ -423,33 +361,14 @@
         legend.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'info legend');
             div.innerHTML += 
-                `Aktywne <select id="filtertime">
-                    <option>Wszystkie</option>
-                    <option value="month">Ostatni miesiąc</option>
-                    <option value="week">Ostatni tydzień</option>
-                    <option value="day">Ostatni dzień</option>
+                `Activity <select id="filtertime">
+                    <option>since 2020-03-16</option>
+                    <option value="month">in the past month</option>
+                    <option value="week">in the past week</option>
+                    <option value="day">in the past day</option>
                 </select><br>
-                Region <select id='regionfilter'>
-                    <option value=0>Wył.</option>
-                    <option value=2445>dolnośląskie</option>
-                    <option value=2453>kujawsko-pomorskie</option>
-                    <option value=2438>lubelskie</option>
-                    <option value=2447>lubuskie</option>
-                    <option value=2446>łódzkie</option>
-                    <option value=2439>małopolskie</option>
-                    <option value=2448>opolskie</option>
-                    <option value=2441>podkarpackie</option>
-                    <option value=2442>podlaskie</option>
-                    <option value=2449>pomorskie</option>
-                    <option value=2450>śląskie</option>
-                    <option value=2443>świętokrzyskie</option>
-                    <option value=2444>warmińsko-mazurskie</option>
-                    <option value=2440>mazowieckie</option>
-                    <option value=2451>wielkopolskie</option>
-                    <option value=2452>zachodniopomorskie</option>
-                </select><br>
-                Zmiana <select id='minusfilter'>
-                    <option value=0>Wył.</option>
+                Change <select id='minusfilter'>
+                    <option value=0>Off</option>
                     <option value=1>Legion -</option>
                     <option value=2>Swarm -</option>
                     <option value=3>Faceless -</option>
@@ -457,14 +376,16 @@
                     <option value=5>Swarm +</option>
                     <option value=6>Faceless +</option>
                 </select><br>
-                Rozmiar <select id='filter'>
-                    <option value=0>Wył.</option>
-                    <option value=10000>Większe niż 10K</option>
-                    <option value=100000>Większe niż 100K</option>
-                    <option value=1000000>Większe niż 1M</option>
-                    <option value=10000000>Więszke niż 10M</option>
+                Zone size <select id='filter'>
+                    <option value=0>Off</option>
+                    <option value=5000>Zones > 5K</option>
+                    <option value=10000>Zones > 10K</option>
+                    <option value=100000>Zones > 100K</option>
+                    <option value=1000000>Zones > 1M</option>
+                    <option value=10000000>Zones > 10M</option>
+                    <option value=100000000>Zones > 100M</option>
                 </select><br>
-                Liczebność botów: <input id="checkbots" type="checkbox"><br>
+                Bot counter: <input id="checkbots" type="checkbox"><br>
                 <a id='statsButton' class='link' onclick='statsToggle()'>Show/hide stats</a><div id='stats' style='display:none'></div>
                 <a href='https://github.com/Nokimo/QONQR_zonedata'>GitHub</a>`;
             L.DomEvent.disableClickPropagation(div);
@@ -518,18 +439,12 @@
         
         /* End */
         
-        window.regionfilter = 0;
         window.minusfilter = 0;
         window.countfilter = 0;
         window.timefilter = new Date(0);
        
         $("#minusfilter").change(function () {
             window.minusfilter = this.value;
-            createPointsLayer();
-        })
-        
-        $("#regionfilter").change(function () {
-            window.regionfilter = this.value;
             createPointsLayer();
         })
         
@@ -541,6 +456,7 @@
         $("#filtertime").change(function () {
             var date = new Date();
             var timefilter = new Date(0);
+
             if (this.value == "month") {
                 timefilter = Date.UTC(date.getUTCFullYear(), date.getUTCMonth() - 1, date.getUTCDate());
             } else if (this.value == "week") {
@@ -548,6 +464,7 @@
             } else if (this.value == "day") {
                 timefilter = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() - 1);
             }
+            
             window.timefilter = timefilter;
             createPointsLayer();
         })
