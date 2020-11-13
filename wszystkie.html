@@ -364,7 +364,7 @@
             $("#faclessbot").html("<div class='faceless klocek'>"+totalFaceless.toLocaleString()+"</div>");
         }
 
-        var baseUrl = "https://raw.githubusercontent.com/Nokimo/polska/master/data/";
+        var baseUrl = "https://raw.githubusercontent.com/neon-ninja/QONQR_zonedata/master/data/";
         map.spin(true, { color: "white" });
         Papa.parse(baseUrl + "Countries.csv", {
             download: true,
@@ -386,7 +386,7 @@
                             var r = regions.data[i];
                             window.regions[r.regionid] = r;
                         }
-                        Papa.parse(baseUrl + "polskaswiat.csv", {
+                        Papa.parse(baseUrl + "monthly_unique_zones.csv", {
                             download: true,
                             header: true,
                             dynamicTyping: true,
