@@ -437,10 +437,10 @@
             var div = L.DomUtil.create('div', 'info legend');
             div.innerHTML += 
                 `Aktywne <select id="filtertime">
-                    <option>Wszystkie</option>
+                    <option value="all" selected>Wszystkie</option>
                     <option value="month">Ostatni miesiąc</option>
                     <option value="week">Ostatni tydzień</option>
-                    <option value="day" selected>Ostatni dzień</option>
+                    <option value="day">Ostatni dzień</option>
                 </select><br>
                 Region <select id='regionfilter'>
                     <option value=0>Wył.</option>
@@ -530,7 +530,7 @@
         window.regionfilter = 0;
         window.minusfilter = 0;
         window.countfilter = 0;
-        window.timefilterName = "day";
+        window.timefilterName = "all";
         window.timefilter = getTimeFromName(window.timefilterName);
         
         
