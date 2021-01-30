@@ -1,14 +1,14 @@
+
 <!DOCTYPE html>
 <html>
 
 <head>
-    <title>QONQR Poland zone map</title>
+    <title>QONQR zone map</title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
     <link rel="shortcut icon" href="https://i.imgur.com/cacSRnH.png"/>
-   
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
     <script src="https://rawcdn.githack.com/robertleeplummerjr/Leaflet.glify/466c3696d9f67b7833089c15317ae9b6d7e5a30f/dist/glify-browser.js"></script>
     <script src="https://unpkg.com/leaflet-providers@1.3.0/leaflet-providers.js"></script>
@@ -16,6 +16,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.3.7/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
     <script src="https://unpkg.com/leaflet-spin@1.1.0/leaflet.spin.min.js"></script>
+    <script src="https://unpkg.com/leaflet-search@2.9.8/dist/leaflet-search.src.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-search@2.9.8/src/leaflet-search.css" />
+    <script src="https://nuclearsecrecy.github.io/Leaflet.greatCircle/Leaflet.greatCircle.js"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-164777450-1"></script>
     <script>
@@ -34,15 +37,6 @@
             margin: 0;
             padding: 0;
         }
-
-        .legend {
-            color: white;
-            padding: 10px;
-            background-color: rgba(0, 0, 0, 0.8);
-            border-radius: 5px;
-        }
-
-        /* Some shit */
         
         .klocek{
             padding: 10px;
@@ -54,9 +48,13 @@
         .naglowek{
             color: white;
         }
-        
-        /* end */
-        
+        .legend {
+            color: white;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 5px;
+        }
+
         .uncaptured {
             color: orange;
         }
@@ -122,14 +120,22 @@
             worldCopyJump: true
         });
 
+        var search = L.control.search({
+            sourceData: function(text, callback) {
+                callback(window.data);
+            },
+            propertyName: "Description",
+            propertyLoc: ["Latitude", "Longitude"],
+            marker: L.circleMarker([0,0], {color: "DeepSkyBlue", fillOpacity: 0})
+        });
+        map.addControl(search);
+
         map.locate({
             setView: true,
             maxZoom: 5
         }).on("locationfound", function (e) {
-            L.circle([e.latitude, e.longitude], { color: "cyan", radius: 500 }).bindTooltip("You").addTo(map);
+            L.circle([e.latitude, e.longitude], { color: "cyan", radius: e.accuracy }).bindTooltip("You").addTo(map);
             var range_km = 1609.34;
-            /*var ZA = 48;
-            var Shock = 40;*/
             if (new Date().getUTCDay() == 1) { // Monday
                 var week = Math.floor(new Date().getUTCDate() / 7);
                 if (week == 1) {
@@ -140,13 +146,11 @@
                     range_km = 20116.8;
                 }
             }
-            L.circle([e.latitude, e.longitude], { color: "cyan", fillOpacity: 0, weight: 0.75, radius: range_km * 1000, interactive: false }).addTo(map);
-            /*L.circle([e.latitude, e.longitude], { color: "cyan", fillOpacity: 0, weight: 0.75, radius: ZA * 1000, interactive: false }).addTo(map);
-            L.circle([e.latitude, e.longitude], { color: "cyan", fillOpacity: 0, weight: 0.75, radius: Shock * 1000, interactive: false }).addTo(map);*/
+            L.greatCircle([e.latitude, e.longitude], { color: "cyan", fillOpacity: 0, weight: 0.75, radius: range_km * 1000, interactive: false }).addTo(map);
         });
-        
+
         var baseMaps = {
-            "CartoDB Dark Matter": L.tileLayer.provider("CartoDB.DarkMatter").addTo(map)
+            "CartoDB Dark Matter": L.tileLayer.provider("CartoDB.DarkMatter").addTo(map),
         }
 
         var uncaptured = L.layerGroup().addTo(map);
@@ -167,11 +171,13 @@
 
         window.teamfilter = [0, 1, 2, 3];
         map.on("overlayadd", function (e) {
+            if (!window.data) return;
             layers.push(e.name);
             var indices = layers.map(e => Object.keys(overlays).indexOf(e));
             window.teamfilter = indices;
             createPointsLayer();
         }).on("overlayremove", function (e) {
+            if (!window.data) return;
             layers.splice(layers.indexOf(e.name), 1);
             var indices = layers.map(e => Object.keys(overlays).indexOf(e));
             window.teamfilter = indices;
@@ -207,7 +213,8 @@
 
         function createPointsLayer() {
             console.log(window.data.length);
-                if(window.minusfilter == 0)
+            
+            if(window.minusfilter == 0)
                 {
                     var data = window.data.filter(e => e.TotalCount >= window.countfilter &&
                     new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
@@ -255,6 +262,7 @@
                     new Date(e.LastUpdateDateUtc.replace(" ", "T") + "Z") > window.timefilter &&
                     window.teamfilter.includes(e.ZoneControlState))   
                 }
+
             console.log(data.length);
             var points = data.map(e => [e.Latitude, e.Longitude]);
             if (window.pointsLayer) window.pointsLayer.remove()
@@ -273,7 +281,9 @@
                         .setContent(buildDescString(data[i]))
                         .openOn(map);
                 },
-                data: points
+                data: points,
+                opacity: 1,
+                //fragmentShaderSource: L.glify.shader.fragment.simpleCircle
             });
             updateStats(data);
         }
@@ -298,7 +308,7 @@
                     className + "'>" + d.Description + ", " + region + ", " + country + "</div>")
             }
         
-            $("#infobot").html("<div class='naglowek klocek'>Bot counter</div>");
+            $("#infobot").html("<div class='naglowek klocek'>Liczba botów</div>");
             $("#legionbot").html("<div class='legion klocek'>"+totalLegion.toLocaleString()+"</div>");
             $("#swarmbot").html("<div class='swarm klocek'>"+totalSwarm.toLocaleString()+"</div>");
             $("#faclessbot").html("<div class='faceless klocek'>"+totalFaceless.toLocaleString()+"</div>");
@@ -337,12 +347,13 @@
                                 for (var d of window.data) {
                                     var p = [d.Latitude, d.Longitude]
                                     if (!pointLookup[p]) {
-                                        pointLookup[p] = d;
+                                        pointLookup[p] = [d];
                                     } else {
-                                        pointLookup[p].colocated = true;
-                                        pointLookup[p] = d;
-                                        d.Longitude += .001;
-                                        d.colocated = true;
+                                        d.Longitude += .001 * pointLookup[p].length;
+                                        pointLookup[p].push(d);
+                                        for (var zone of pointLookup[p]) {
+                                            zone.colocated = true;
+                                        }
                                     }
                                 }
                                 createPointsLayer();
@@ -367,7 +378,7 @@
                     <option>since 2020-03-16</option>
                     <option value="month">in the past month</option>
                     <option value="week">in the past week</option>
-                    <option value="day">in the past day</option>
+                    <option value="day" selected>in the past day</option>
                 </select><br>
                 Change <select id='minusfilter'>
                     <option value=0>Off</option>
@@ -393,11 +404,9 @@
             L.DomEvent.disableClickPropagation(div);
             return div;
         };
-    
-        legend.addTo(map);
         
-        /* Some messy code */
-    
+        legend.addTo(map);
+
         $('#checkbots').click(function () {
             $("#infobot").toggle();
             $("#legionbot").toggle();
@@ -438,36 +447,44 @@
         legionbots.addTo(map);
         swarmbots.addTo(map);
         falcessbot.addTo(map);
-        
-        /* End */
-        
+
         window.minusfilter = 0;
         window.countfilter = 0;
-        window.timefilter = new Date(0);
-       
+        window.timefilterName = "day";
+        window.timefilter = getTimeFromName(window.timefilterName);
+        
+        
         $("#minusfilter").change(function () {
             window.minusfilter = this.value;
             createPointsLayer();
         })
         
+        $("#regionfilter").change(function () {
+            window.regionfilter = this.value;
+            createPointsLayer();
+        })
+
         $("#filter").change(function () {
             window.countfilter = this.value;
             createPointsLayer();
         })
 
-        $("#filtertime").change(function () {
+        function getTimeFromName(name) {
             var date = new Date();
             var timefilter = new Date(0);
-
-            if (this.value == "month") {
+            if (name == "month") {
                 timefilter = Date.UTC(date.getUTCFullYear(), date.getUTCMonth() - 1, date.getUTCDate());
-            } else if (this.value == "week") {
+            } else if (name == "week") {
                 timefilter = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() - 7);
-            } else if (this.value == "day") {
+            } else if (name == "day") {
                 timefilter = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() - 1);
             }
-            
-            window.timefilter = timefilter;
+            return timefilter;
+        }
+
+        $("#filtertime").change(function () {
+            window.timefilterName = this.value;
+            window.timefilter = getTimeFromName(window.timefilterName);
             createPointsLayer();
         })
 
