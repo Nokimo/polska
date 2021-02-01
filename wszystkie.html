@@ -120,22 +120,82 @@
             worldCopyJump: true
         });
 
+        var wskMarker = L.circle([0,0], {color: "White", fillOpacity: 0.05 , radius: 1500});
+        
         var search = L.control.search({
             sourceData: function(text, callback) {
                 callback(window.data);
             },
             propertyName: "Description",
             propertyLoc: ["Latitude", "Longitude"],
-            marker: L.circleMarker([0,0], {color: "DeepSkyBlue", fillOpacity: 0})
+            marker: wskMarker
         });
+
+        var sLat, sLng;
+        var S64,S48,S40,S32;
+        var infoclear64 = "", infoclear48 = "", infoclear40 = "", infoclear32 = "";
+        var cords = "old";
+
+        search.on('search:locationfound', function(e) {
+            document.querySelector("#map > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div.info.legend.range.leaflet-control").style.display = '';
+            cords = "new";
+
+            var u = e.latlng;
+            sLat = u.lat;
+            sLng = u.lng;
+
+            if (document.getElementById('K64').checked) {
+                S64 = new L.circle([u.lat, u.lng], {color: 'White', fillOpacity: 0.05, weight: 1.5,  radius: 64 *1000, interactive: false }).addTo(map);
+                infoclear64 = "notremoved";
+            }
+            if (document.getElementById('K48').checked) {
+                S48 = new L.circle([u.lat, u.lng], {color: 'White', fillOpacity: 0.05, weight: 1.5,  radius: 48 *1000, interactive: false }).addTo(map);
+                infoclear48 = "notremoved";
+            } 
+            if (document.getElementById('K40').checked) {
+                S40 = new L.circle([u.lat, u.lng], {color: 'White', fillOpacity: 0.05, weight: 1.5,  radius: 40 *1000, interactive: false }).addTo(map);
+                infoclear40 = "notremoved";
+            } 
+            if (document.getElementById('K32').checked) {
+                S32 = new L.circle([u.lat, u.lng], {color: 'White', fillOpacity: 0.05, weight: 1.5,  radius: 32 *1000, interactive: false }).addTo(map);
+                infoclear32 = "notremoved";
+            }
+        });
+    
+        search.on('search:expanded', function(e) {
+            cords = "old";
+
+            if(infoclear64 == "notremoved")
+            {
+                S64.remove(map);
+                infoclear64 = "removed";
+            }
+            if(infoclear48 == "notremoved")
+            {
+                S48.remove(map);
+                infoclear48 = "removed";
+            }
+            if(infoclear40 == "notremoved")
+            {
+                S40.remove(map);
+                infoclear40 = "removed";
+            }
+            if(infoclear32 == "notremoved")
+            {
+                S32.remove(map);
+                infoclear32 = "removed";
+            }
+            wskMarker.remove(map);
+        });
+
         map.addControl(search);
 
         var K64,K48,K40,K32;
-
         map.locate({
             setView: true,
             maxZoom: 5
         }).on("locationfound", function (e) {
+            locError = false;
             L.circle([e.latitude, e.longitude], { color: "cyan", radius: e.accuracy }).bindTooltip("You").addTo(map);
             var range_km = 1609.34;
             if (new Date().getUTCDay() == 1) { // Monday
@@ -156,8 +216,9 @@
         });
 
         map.on('locationerror', function onLocationError(e) {
-            rangeinfo.remove(map);
-            console.log("ni ma");
+            document.querySelector("#map > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div.info.legend.range.leaflet-control").style.display = 'none';
+            locError = true;
+            console.log("Location Error");
         });
 
         var baseMaps = {
@@ -425,10 +486,9 @@
             $("#faclessbot").toggle();
         });
         
-/* Range */
-var rangeinfo = L.control({ position: 'bottomright' });
+        var rangeinfo = L.control({ position: 'bottomright' });
         rangeinfo.onAdd = function (map) {
-            var div = L.DomUtil.create('div', 'info legend');
+            var div = L.DomUtil.create('div', 'info legend range');
             div.innerHTML += 
                 `Range: <br>
                 <input id="K64" type="checkbox"> 64 km 
@@ -438,47 +498,102 @@ var rangeinfo = L.control({ position: 'bottomright' });
             L.DomEvent.disableClickPropagation(div);
             return div;
         };
-
         rangeinfo.addTo(map);
 
-        var yn64=0, yn48=0, yn40=0, yn32=0;
 
-        $('#K64').click(function () {
-            if(yn64 == 0){
-                K64.addTo(map);
-                yn64 = 1;
-            }else if(yn64 == 1){
-                K64.remove(map);
-                yn64 = 0;
+        $('#K64').on('change', function() { 
+            if (this.checked) {
+                if(cords == "new")
+                {
+                    S64 = L.circle([sLat, sLng], {color: 'White', fillOpacity: 0.05, weight: 1.5,  radius: 64 *1000, interactive: false }).addTo(map);
+                    infoclear64 = "notremoved";
+                }
+                if(locError == false)
+                {
+                    K64.addTo(map);
+                }
+            }else if(!this.checked){
+                if(infoclear64 == "notremoved")
+                {
+                    S64.remove(map);
+                    infoclear = "removed";
+                }
+                if(locError == false)
+                {
+                    K64.remove(map);
+                }
             }
         });
 
-        $('#K48').click(function () {
-            if(yn48 == 0){
-                K48.addTo(map);
-                yn48 = 1;
-            }else if(yn48 == 1){
-                K48.remove(map);
-                yn48 = 0;
+        $('#K48').on('change', function() { 
+            if (this.checked) {
+                if(cords == "new")
+                {
+                    S48 = L.circle([sLat, sLng], {color: 'White', fillOpacity: 0.05, weight: 1.5,  radius: 48 *1000, interactive: false }).addTo(map);
+                    infoclear48 = "notremoved";
+                }
+                if(locError == false)
+                {
+                    K48.addTo(map);
+                }
+            }else if(!this.checked){
+                if(infoclear48== "notremoved")
+                {
+                    S48.remove(map);
+                    infoclear = "removed";
+                }
+                if(locError == false)
+                {
+                    K48.remove(map);
+                }
             }
         });
 
-        $('#K40').click(function () {
-            if(yn40 == 0){
-                K40.addTo(map);
-                yn40 = 1;
-            }else if(yn40 == 1){
-                K40.remove(map);
-                yn40 = 0;
+        $('#K40').on('change', function() { 
+            if (this.checked) {
+                if(cords == "new")
+                {
+                    S40 = L.circle([sLat, sLng], {color: 'White', fillOpacity: 0.05, weight: 1.5,  radius: 40 *1000, interactive: false }).addTo(map);
+                    infoclear40 = "notremoved";
+                }
+                if(locError == false)
+                {
+                    K40.addTo(map);
+                }
+            }else if(!this.checked){
+                if(infoclear40== "notremoved")
+                {
+                    S40.remove(map);
+                    infoclear = "removed";
+                }
+                if(locError == false)
+                {
+                    K40.remove(map);
+                }
             }
         });
-        
-        $('#K32').click(function () {
-            if(yn32 == 0){
-                K32.addTo(map);
-                yn32 = 1;
-            }else if(yn32 == 1){
-                K32.remove(map);
+
+        $('#K32').on('change', function() { 
+            if (this.checked) {
+                if(cords == "new")
+                {
+                    S32 = L.circle([sLat, sLng], {color: 'White', fillOpacity: 0.05, weight: 1.5,  radius: 32 *1000, interactive: false }).addTo(map);
+                    infoclear32 = "notremoved";
+                }
+                if(locError == false)
+                {
+                    K32.addTo(map);
+                }
+            }else if(!this.checked){
+                if(infoclear32== "notremoved")
+                {
+                    S32.remove(map);
+                    infoclear = "removed";
+                }
+                if(locError == false)
+                {
+                    K32.remove(map);
+                }
                 yn32 = 0;
             }
         });
