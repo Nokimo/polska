@@ -142,6 +142,30 @@
             cords = "new";
 
             var u = e.latlng;
+            if(sLat != u.lat || sLng != u.lng)
+            {
+                if(infoclear64 == "notremoved")
+                {
+                    S64.remove(map);
+                    infoclear64 = "removed";
+                }
+                if(infoclear48 == "notremoved")
+                {
+                    S48.remove(map);
+                    infoclear48 = "removed";
+                }
+                if(infoclear40 == "notremoved")
+                {
+                    S40.remove(map);
+                    infoclear40 = "removed";
+                }
+                if(infoclear32 == "notremoved")
+                {
+                    S32.remove(map);
+                    infoclear32 = "removed";
+                }
+            }
+
             sLat = u.lat;
             sLng = u.lng;
 
@@ -164,7 +188,7 @@
         });
     
         search.on('search:expanded', function(e) {
-            cords = "old";
+            cords = "old";     
 
             if(infoclear64 == "notremoved")
             {
