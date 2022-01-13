@@ -386,7 +386,7 @@
             $("#faclessbot").html("<div class='faceless klocek'>"+totalFaceless.toLocaleString()+"</div>");
         }
 
-        var baseUrl = "https://raw.githubusercontent.com/neon-ninja/QONQR_zonedata/master/data/";
+        var baseUrl = "https://raw.githubusercontent.com/Nokimo/database/master/data/";
         map.spin(true, { color: "white" });
         Papa.parse(baseUrl + "Countries.csv", {
             download: true,
@@ -408,7 +408,7 @@
                             var r = regions.data[i];
                             window.regions[r.regionid] = r;
                         }
-                        Papa.parse(baseUrl + "monthly_unique_zones.csv", {
+                        Papa.parse(baseUrl + "world.csv", {
                             download: true,
                             header: true,
                             dynamicTyping: true,
