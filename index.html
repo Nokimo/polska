@@ -3,7 +3,7 @@
 <html>
 
 <head>
-    <title>QONQR Poland zone map</title>
+    <title>Poland zone map</title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -534,14 +534,14 @@
         legend.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'info legend');
             div.innerHTML += 
-                `Aktywne <select id="filtertime">
-                    <option value="all" selected>Wszystkie</option>
-                    <option value="month">Ostatni miesiąc</option>
-                    <option value="week">Ostatni tydzień</option>
-                    <option value="day">Ostatni dzień</option>
+                `Dane <select id="filtertime" style="width: 149.5px;">
+                    <option value="all" selected>dostępny zakres</option>
+                    <option value="month">ostatni miesiąc</option>
+                    <option value="week">ostatni tydzień</option>
+                    <option value="day">ostatni dzień</option>
                 </select><br>
-                Region <select id='regionfilter'>
-                    <option value=0>Wył.</option>
+                Region <select id='regionfilter' style="width: 140px;">
+                    <option value=0>cały kraj</option>
                     <option value=2445>dolnośląskie</option>
                     <option value=2453>kujawsko-pomorskie</option>
                     <option value=2438>lubelskie</option>
@@ -559,25 +559,24 @@
                     <option value=2451>wielkopolskie</option>
                     <option value=2452>zachodniopomorskie</option>
                 </select><br>
-                Zmiana <select id='minusfilter'>
-                    <option value=0>Wył.</option>
-                    <option value=1>Legion -</option>
-                    <option value=2>Swarm -</option>
-                    <option value=3>Faceless -</option>
-                    <option value=4>Legion +</option>
-                    <option value=5>Swarm +</option>
-                    <option value=6>Faceless +</option>
+                Zmiana <select id='minusfilter' style="width: 138px;">
+                    <option value=0>dowolna</option>
+                    <option value=1>legion -</option>
+                    <option value=2>swarm -</option>
+                    <option value=3>faceless -</option>
+                    <option value=4>legion +</option>
+                    <option value=5>swarm +</option>
+                    <option value=6>faceless +</option>
                 </select><br>
-                Rozmiar <select id='filter'>
-                    <option value=0>Wył.</option>
-                    <option value=10000>Większe niż 10K</option>
-                    <option value=100000>Większe niż 100K</option>
-                    <option value=1000000>Większe niż 1M</option>
-                    <option value=10000000>Więszke niż 10M</option>
+                Strefy <select id='filter' style="width: 147px;">
+                    <option value=0>wszystkie</option>
+                    <option value=10000>większe niż 10k</option>
+                    <option value=100000>większe niż 100k</option>
+                    <option value=1000000>większe niż 1m</option>
+                    <option value=10000000>więszke niż 10m</option>
                 </select><br>
-                Liczebność botów: <input id="checkbots" type="checkbox"><br>
-                <a id='statsButton' class='link' onclick='statsToggle()'>Show/hide stats</a><div id='stats' style='display:none'></div>
-                <a href='https://github.com/Nokimo/QONQR_zonedata'>GitHub</a>`;
+                Liczebność botów: <input id="checkbots" type="checkbox">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href='https://github.com/Nokimo/QONQR_zonedata'>Autor</a>`;
             L.DomEvent.disableClickPropagation(div);
             return div;
         };
