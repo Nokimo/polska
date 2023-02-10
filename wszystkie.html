@@ -447,36 +447,36 @@
             var div = L.DomUtil.create('div', 'info legend');
             div.innerHTML += 
                 `Activity <select id="filtertime">
-                    <option>since 2020-03-16</option>
+                    <option>available data</option>
                     <option value="month">in the past month</option>
                     <option value="week">in the past week</option>
                     <option value="day" selected>in the past day</option>
                 </select><br>
-                Change <select id='minusfilter'>
-                    <option value=0>Off</option>
-                    <option value=1>Legion -</option>
-                    <option value=2>Swarm -</option>
-                    <option value=3>Faceless -</option>
-                    <option value=4>Legion +</option>
-                    <option value=5>Swarm +</option>
-                    <option value=6>Faceless +</option>
+                Change <select id='minusfilter' style="width: 123px;">
+                    <option value=0>off</option>
+                    <option value=1>legion -</option>
+                    <option value=2>swarm -</option>
+                    <option value=3>faceless -</option>
+                    <option value=4>legion +</option>
+                    <option value=5>swarm +</option>
+                    <option value=6>faceless +</option>
                 </select><br>
-                Zone size <select id='filter'>
-                    <option value=0>Off</option>
-                    <option value=5000>Zones > 5K</option>
-                    <option value=10000>Zones > 10K</option>
-                    <option value=100000>Zones > 100K</option>
-                    <option value=1000000>Zones > 1M</option>
-                    <option value=10000000>Zones > 10M</option>
-                    <option value=100000000>Zones > 100M</option>
+                Zone size <select id='filter' style="width: 113px;">
+                    <option value=0>any</option>
+                    <option value=5000>zones > 5k</option>
+                    <option value=10000>zones > 10k</option>
+                    <option value=100000>zones > 100k</option>
+                    <option value=1000000>zones > 1m</option>
+                    <option value=10000000>zones > 10m</option>
+                    <option value=100000000>zones > 100m</option>
                 </select><br>
-                Bot counter: <input id="checkbots" type="checkbox"><br>
-                <a id='statsButton' class='link' onclick='statsToggle()'>Show/hide stats</a><div id='stats' style='display:none'></div>
+                Bot counter: <input id="checkbots" type="checkbox">
+                <div id='stats' style='display:none'></div>
                 <a href='https://github.com/Nokimo/QONQR_zonedata'>GitHub</a>`;
             L.DomEvent.disableClickPropagation(div);
             return div;
         };
-        
+        //<a id='statsButton' class='link' onclick='statsToggle()'>Show/hide stats</a>
         legend.addTo(map);
 
         $('#checkbots').click(function () {
