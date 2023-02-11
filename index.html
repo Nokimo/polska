@@ -221,6 +221,8 @@
             setView: true,
             maxZoom: 5
         }).on("locationfound", function(e){
+            map.flyTo([e.latitude, e.longitude], 8)
+            //map.setView([e.latitude, e.longitude], 15)
             locError = false;
             L.circle([e.latitude, e.longitude], { color: "cyan", radius: e.accuracy }).bindTooltip("You").addTo(map);
             var range_km = 1609.34;
@@ -246,6 +248,7 @@
             document.querySelector("#map > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div.info.legend.range.leaflet-control").style.display = 'none';
             locError = true;
             console.log("Location Error");
+            map.flyTo([52.1, 19.58333], 7)
         });
         
         var baseMaps = {
