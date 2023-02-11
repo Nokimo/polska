@@ -284,10 +284,19 @@
         });
 
         function clamp(num) {
-            var min = 10;
-            var max = 50;
-            return num <= min ? min : num >= max ? max : num;
+            var normal = 6.5;
+            var m1 = 10;
+            var m10 = 18;
+            var m50 = 25;
+
+            return num <= 1000000 ? normal : num >= 100000000 ? m50 : num >= 10000000 ? m10 : num >= 1000000 ? m1 : m1;
         }
+
+        // function clamp(num) {
+        //     var min = 10;
+        //     var max = 50;
+        //     return num <= min ? min : num >= max ? max : num;
+        // }
 
         function formatDelta(delta) {
             if (!delta) {
@@ -430,7 +439,7 @@
             window.pointsLayer = L.glify.points({
                 map: map,
                 size: function (i, e) {
-                    return clamp(data[i].TotalCount / 1E6);
+                    return clamp(data[i].TotalCount);
                 },
                 color: function (i, e) {
                     return colours[data[i].ZoneControlState]
